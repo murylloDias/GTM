@@ -15,15 +15,60 @@
       }
       const inExcludeList = window.ajrS && window.ajrS.length > 0 ? window.ajrS.filter(e => xhr.url.startsWith(e.url)).length > 0 : false
       if (!inExcludeList) {
-        dataLayer.push({
-          event: 'ajaxSuccess',
-          ajaxInfo: {
-            ajaxEventMethod: xhr.method,
-            ajaxEventUrl: xhr.url,
-            ajaxPostData: (xhr.method === 'POST' && xhrData ? xhrData : ''),
-            ajaxEventLabel: (xhr.url.indexOf('widget=') !== -1) ? '' : xhr.responseText
+        const stores = [
+          { id: '5d56f2cbc1a5e60034475656', name: 'Accon Curitiba' },
+          { id: '5ec05c59d453ab004c08f1e7', name: 'Accon Delivery' },
+          { id: '5ecedd46fd8511004c4f5c24', name: 'Accon Nordeste' },
+          { id: '5d42e2a29ba6160034605f01', name: 'Accon Porto Alegre' },
+          { id: '5ec818bee2b733004c82e547', name: 'Accon Rio de Janeiro' },
+          { id: '5d0a82535a1cf10033cb0969', name: 'Accon São Paulo' }
+        ]
+
+        if ((xhr.url.indexOf('details') !== -1) && (xhr.url.indexOf('store'))) {
+          const eventLabel = (xhr.url.indexOf('widget=') !== -1) ? '' : xhr.responseText
+          const obj = JSON.parse(eventLabel)
+
+          const url = new URL(xhr.url)
+          stores.forEach(store => {
+            if (store.id === url.searchParams.get('store')) {
+              obj.store = {
+                id: store.id,
+                name: store.name
+              }
+            }
+          })
+
+          if (obj.price.originalPrice > 0) {
+            obj.price.discount = obj.price.originalPrice - obj.price.actualPrice
+          } else {
+            obj.price.discount = 0
+            obj.price.originalPrice = obj.price.actualPrice
           }
-        })
+
+          obj.brand = 'Accon'
+
+          dataLayer.push({ ecommerce: null })
+          dataLayer.push({
+            event: 'view_item',
+            ecommerce: {
+              currency: 'BRL',
+              value: obj.price.actualPrice,
+              items: [{
+                item_id: obj._id,
+                item_name: obj.printDescription,
+                affiliation: obj.store.name,
+                currency: 'BRL',
+                discount: obj.price.discount,
+                index: obj.order,
+                item_brand: obj.brand,
+                item_category: obj.group,
+                item_variant: obj.details,
+                price: obj.price.originalPrice,
+                quantity: 1
+              }]
+            }
+          })
+        }
       }
       clearInterval(intervalId)
     }, 1)
