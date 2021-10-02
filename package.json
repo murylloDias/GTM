@@ -17,8 +17,6 @@
   },
   "homepage": "https://github.com/murylloDias/GTM#readme",
   "dependencies": {
-    "-": "^0.0.1",
-    "D": "^1.0.0",
     "standard": "^16.0.3"
   }
 }
