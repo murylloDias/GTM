@@ -33,16 +33,16 @@
           }
           obj.brand = 'Accon'
           dataLayer.push({
-            event: 'accon',
-            view: JSON.stringify(obj)
+            event: 'view',
+            data: JSON.stringify(obj)
           })
         }
 
         if (xhr.url === 'https://api.accon.app/v1/order') {
           const eventLabel = (xhr.url.indexOf('widget=') !== -1) ? '' : xhr.responseText
           dataLayer.push({
-            event: 'accon',
-            order: eventLabel
+            event: 'order',
+            data: eventLabel
           })
         }
       }

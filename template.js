@@ -18,11 +18,11 @@ const getSettings = () => {
   }
   setInWindow('ajrS', urls)
   return false
-};
+}
 
 getSettings()
 
-const url = 'https://cdn.jsdelivr.net/gh/murylloDias/GTM@main/config-dataLayer-v1.min.js'
+const url = 'https://cdn.jsdelivr.net/gh/murylloDias/GTM@main/config-dataLayer.min.js'
 if (queryPermission('inject_script', url)) {
   injectScript(url, data.gtmOnSuccess, data.gtmOnFailure, url)
 }
