@@ -22,7 +22,7 @@ const getSettings = () => {
 
 getSettings()
 
-const url = 'https://cdn.jsdelivr.net/gh/murylloDias/GTM@main/config-dataLayer.min.js'
+const url = 'https://cdn.jsdelivr.net/gh/murylloDias/GTM@f74923d20f6d7384c8be868c21a993c461f36f32/config-dataLayer.js'
 if (queryPermission('inject_script', url)) {
   injectScript(url, data.gtmOnSuccess, data.gtmOnFailure, url)
 }
