@@ -18,5 +18,10 @@ function () {
     }],
     value: data.price.actualPrice
   }
-  return ecommerce
+
+  if ((VIEW.length === 0) || (ecommerce.items[0].item_id !== VIEW[VIEW.length - 1].items[0].item_id)) {
+    VIEW.push(ecommerce)
+  }
+
+  return ecommerce.items
 }

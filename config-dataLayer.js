@@ -53,6 +53,5 @@
 })()
 
 const VIEW = []
-const LIST = []
 const CART = []
 const ORDER = []
