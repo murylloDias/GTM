@@ -23,50 +23,77 @@
           { id: '5ec818bee2b733004c82e547', name: 'Accon Rio de Janeiro' },
           { id: '5d0a82535a1cf10033cb0969', name: 'Accon São Paulo' }
         ]
+        const marca = 'Accon Demonstração'
 
-        if ((xhr.url.indexOf('details') !== -1) && (xhr.url.indexOf('store'))) {
+        if ((xhr.url.indexOf('details') !== -1) && (xhr.url.indexOf('store') !== -1)) {
           const eventLabel = (xhr.url.indexOf('widget=') !== -1) ? '' : xhr.responseText
           const obj = JSON.parse(eventLabel)
-
           const url = new URL(xhr.url)
+
+          let storeName
           stores.forEach(store => {
             if (store.id === url.searchParams.get('store')) {
-              obj.store = {
-                id: store.id,
-                name: store.name
-              }
+              storeName = store.name
             }
           })
 
-          if (obj.price.originalPrice > 0) {
-            obj.price.discount = obj.price.originalPrice - obj.price.actualPrice
-          } else {
-            obj.price.discount = 0
-            obj.price.originalPrice = obj.price.actualPrice
+          const data = {
+            currency: 'BRL',
+            items: [{
+              item_id: obj._id,
+              item_name: obj.printDescription,
+              coupon: '',
+              discount: obj.price.discount,
+              affiliation: storeName,
+              item_brand: marca,
+              item_category: obj.group,
+              item_variant: obj.details,
+              price: obj.price.originalPrice,
+              currency: 'BRL',
+              index: obj.order,
+              quantity: 1
+            }],
+            value: obj.price.actualPrice
           }
 
-          obj.brand = 'Accon'
-
-          dataLayer.push({ ecommerce: null })
           dataLayer.push({
-            event: 'view_item',
-            ecommerce: {
+            event: 'view',
+            data: data
+          })
+        }
+
+        if (xhr.url === 'https://api.accon.app/v1/order') {
+          const eventLabel = (xhr.url.indexOf('widget=') !== -1) ? '' : xhr.responseText
+          const obj = JSON.parse(eventLabel)
+
+          const items = obj.products.map(item => {
+            const product = {
+              item_id: item.id,
+              item_name: item.name,
+              coupon: obj.voucher.name,
+              affiliation: obj.store.name,
+              item_brand: marca,
+              price: item.total,
               currency: 'BRL',
-              value: obj.price.actualPrice,
-              items: [{
-                item_id: obj._id,
-                item_name: obj.printDescription,
-                affiliation: obj.store.name,
-                currency: 'BRL',
-                discount: obj.price.discount,
-                index: obj.order,
-                item_brand: obj.brand,
-                item_category: obj.group,
-                item_variant: obj.details,
-                price: obj.price.originalPrice,
-                quantity: 1
-              }]
+              quantity: 1
             }
+            return product
+          })
+
+          const data = {
+            affiliation: obj.store.name,
+            coupon: obj.voucher.name,
+            currency: 'BRL',
+            items: items,
+            transaction_id: obj._id,
+            shipping: obj.deliveryTax,
+            value: obj.total,
+            tax: 0
+          }
+
+          dataLayer.push({
+            event: 'order',
+            data: data
           })
         }
       }
@@ -74,31 +101,6 @@
     }, 1)
     return xhrSend.apply(this, [].slice.call(arguments))
   }
-  const originalFetch = window.fetch
-
-  function onFetchStart () {
-    if (arguments && arguments.length > 0) {
-      const inExcludeList = window.ajrS && window.ajrS.length > 0 ? window.ajrS.filter(e => arguments[0].startsWith(e.url)).length > 0 : false
-      dataLayer.push({
-        event: 'ajaxSuccess',
-        ajaxInfo: {
-          ajaxEventMethod: arguments?.length > 1 ? arguments[1]?.method : 'get',
-          ajaxEventUrl: arguments[0],
-          ajaxPostData: arguments?.length > 1 ? arguments[1]?.body : '',
-          ajaxEventLabel: ''
-        }
-      })
-    }
-  }
-
-  function onFetchStop () {
-    // console.log("fetch has loaded response", arguments)
-  }
-  window.fetch = function () {
-    onFetchStart.apply(null, arguments)
-    return originalFetch.apply(this, arguments).then(function (response) {
-      onFetchStop.call(null, response)
-      return response
-    })
-  }
 })()
+
+const LIST_VIEW = []

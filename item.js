@@ -5,7 +5,7 @@ function () {
     items: [{
       item_id: data._id,
       item_name: data.printDescription,
-      coupon: 'N/D',
+      coupon: '',
       discount: data.price.discount,
       affiliation: data.store.id,
       item_brand: data.brand,
