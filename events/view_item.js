@@ -23,5 +23,5 @@ function () {
     VIEW.push(ecommerce)
   }
 
-  return ecommerce.items
+  return ecommerce
 }
