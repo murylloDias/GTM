@@ -66,11 +66,13 @@
           const eventLabel = (xhr.url.indexOf('widget=') !== -1) ? '' : xhr.responseText
           const obj = JSON.parse(eventLabel)
 
+          const coupon = obj.voucher.name === 'undefined' ? '' : obj.voucher.name
+
           const items = obj.products.map(item => {
             const product = {
               item_id: item.id,
               item_name: item.name,
-              coupon: obj.voucher.name || '',
+              coupon: coupon,
               affiliation: obj.store.name,
               item_brand: marca,
               price: item.total,
@@ -82,7 +84,7 @@
 
           const data = {
             affiliation: obj.store.name,
-            coupon: obj.voucher.name || '',
+            coupon: coupon,
             currency: 'BRL',
             items: items,
             transaction_id: obj._id,
