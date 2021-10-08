@@ -48,7 +48,7 @@
               item_brand: marca,
               item_category: obj.group,
               item_variant: obj.details,
-              price: obj.price.originalPrice,
+              price: obj.price.originalPrice === 0 ? obj.price.actualPrice : obj.price.originalPrice,
               currency: 'BRL',
               index: obj.order,
               quantity: 1
@@ -70,7 +70,7 @@
             const product = {
               item_id: item.id,
               item_name: item.name,
-              coupon: obj.voucher.name,
+              coupon: obj.voucher.name, // Provamente o erro esta sendo causado por o voucher não esta definido
               affiliation: obj.store.name,
               item_brand: marca,
               price: item.total,
@@ -82,7 +82,7 @@
 
           const data = {
             affiliation: obj.store.name,
-            coupon: obj.voucher.name,
+            coupon: obj.voucher.name, // Provamente o erro esta sendo causado por o voucher não esta definido
             currency: 'BRL',
             items: items,
             transaction_id: obj._id,
