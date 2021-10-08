@@ -70,7 +70,7 @@
             const product = {
               item_id: item.id,
               item_name: item.name,
-              coupon: obj.voucher.name, // Provamente o erro esta sendo causado por o voucher não esta definido
+              coupon: obj.voucher.name || '',
               affiliation: obj.store.name,
               item_brand: marca,
               price: item.total,
@@ -82,7 +82,7 @@
 
           const data = {
             affiliation: obj.store.name,
-            coupon: obj.voucher.name, // Provamente o erro esta sendo causado por o voucher não esta definido
+            coupon: obj.voucher.name || '',
             currency: 'BRL',
             items: items,
             transaction_id: obj._id,
@@ -102,5 +102,3 @@
     return xhrSend.apply(this, [].slice.call(arguments))
   }
 })()
-
-const LIST_VIEW = []
