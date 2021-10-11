@@ -57,7 +57,7 @@
           })
         }
 
-        if (xhr.url === 'https://api.accon.app/v1/order') {
+        if ((xhr.url === 'https://api.accon.app/v1/order') && (xhr.method === 'POST')) {
           const eventLabel = (xhr.url.indexOf('widget=') !== -1) ? '' : xhr.responseText
           const obj = JSON.parse(eventLabel)
 
