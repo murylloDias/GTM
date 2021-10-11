@@ -6,6 +6,10 @@ const queryPermission = require('queryPermission')
 
 const log = data.debug ? logToConsole : () => { }
 const urls = data.excludeUrls
+
+const brandName = data.brand
+const storesName = data.stores
+
 const getSettings = () => {
   if (!urls) {
     log('no excludes')
