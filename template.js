@@ -4,11 +4,11 @@ const copyFromWindow = require('copyFromWindow')
 const setInWindow = require('setInWindow')
 const queryPermission = require('queryPermission')
 
+const localStorage = require('localStorage')
+localStorage.setItem('info', data.info_network)
+
 const log = data.debug ? logToConsole : () => { }
 const urls = data.excludeUrls
-
-const brandName = data.brand
-const storesName = data.stores
 
 const getSettings = () => {
   if (!urls) {
@@ -26,7 +26,7 @@ const getSettings = () => {
 
 getSettings()
 
-const url = 'https://cdn.jsdelivr.net/gh/murylloDias/GTM@f74923d20f6d7384c8be868c21a993c461f36f32/config-dataLayer.js'
+const url = ''
 if (queryPermission('inject_script', url)) {
   injectScript(url, data.gtmOnSuccess, data.gtmOnFailure, url)
 }
