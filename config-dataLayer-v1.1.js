@@ -1,4 +1,5 @@
-const VIEW = [];
+const VIEW = []
+const CART = [];
 
 (function () {
   const xhrOpen = window.XMLHttpRequest.prototype.open
@@ -55,10 +56,10 @@ const VIEW = [];
 
           dataLayer.push({
             event: 'view_item',
-            data: data
+            ecommerce: data
           })
 
-          VIEW.push(data)
+          VIEW.push(data.items[0])
         }
 
         if ((xhr.url === 'https://api.accon.app/v1/order') && (xhr.method === 'POST')) {
@@ -94,7 +95,7 @@ const VIEW = [];
 
           dataLayer.push({
             event: 'purchase',
-            data: data
+            ecommerce: data
           })
         }
       }
@@ -109,7 +110,6 @@ const VIEW = [];
   btn[0].addEventListener('click', event => {
     const clickedElement = event.target
     if ((clickedElement.tagName === 'ION-BUTTON') && (clickedElement.textContent.includes('Adicionar R$ '))) {
-      // console.log(clickedElement.tagName)
       const DB_NAME = '_ionicstorage'
       const DB_STORE = '_ionickv'
       const DB_VERSION = 2
@@ -125,12 +125,13 @@ const VIEW = [];
         query.onsuccess = function () {
           const cart = query.result
           const itemCart = cart[cart.length - 1]
-          const itemView = VIEW[VIEW.length - 1].items[0]
+          const itemView = VIEW[VIEW.length - 1]
 
           const view = {}
           view.affiliation = (itemCart.id === itemView.item_id) ? itemView.affiliation : 'N/D'
           view.item_brand = (itemCart.id === itemView.item_id) ? itemView.item_brand : 'N/D'
           view.item_category = (itemCart.id === itemView.item_id) ? itemView.item_category : 'N/D'
+          view.item_variant = (itemCart.modifiers.length === 0) ? itemView.item_variant : itemCart.modifiers // ultima alteração foi nessa linha, precisa testar!
 
           const data = {
             currency: 'BRL',
@@ -140,7 +141,7 @@ const VIEW = [];
               affiliation: view.affiliation,
               item_brand: view.item_brand,
               item_category: view.item_category,
-              item_variant: itemCart.modifiers,
+              item_variant: view.item_variant,
               price: itemCart.total,
               currency: 'BRL',
               quantity: itemCart.quantity
@@ -150,8 +151,9 @@ const VIEW = [];
 
           dataLayer.push({
             event: 'add_to_cart',
-            data: data
+            ecommerce: data
           })
+          CART.push(data.items[0])
         }
 
         query.onerror = function () {
@@ -162,6 +164,28 @@ const VIEW = [];
       openRequest.onerror = function () {
         console.log('Error: ', openRequest.error)
       }
+    }
+  })
+})();
+
+(function () {
+  const btn = document.getElementsByClassName('ion-page')
+  btn[0].addEventListener('click', event => {
+    const clickedElement = event.target
+    if ((clickedElement.tagName === 'DIV') && (clickedElement.textContent.includes('Ver itens R$'))) {
+      console.log(event)
+      const total = CART.reduce((total, item) => {
+        return total + item.price
+      }, 0)
+
+      dataLayer.push({
+        event: 'begin_checkout',
+        ecommerce: {
+          currency: 'BRL',
+          items: CART,
+          value: total
+        }
+      })
     }
   })
 })()
