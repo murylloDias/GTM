@@ -1,3 +1,5 @@
+const VIEW = []
+
 (function () {
   const xhrOpen = window.XMLHttpRequest.prototype.open
   const xhrSend = window.XMLHttpRequest.prototype.send
@@ -52,12 +54,13 @@
           }
 
           dataLayer.push({
-            event: 'view',
+            event: 'view_item',
             data: data
           })
+
+          VIEW.push(data)
         }
 
-        // a ultima modificação foi na inclusão da verificação do xhr.method
         if ((xhr.url === 'https://api.accon.app/v1/order') && (xhr.method === 'POST')) {
           const eventLabel = (xhr.url.indexOf('widget=') !== -1) ? '' : xhr.responseText
           const obj = JSON.parse(eventLabel)
@@ -90,7 +93,7 @@
           }
 
           dataLayer.push({
-            event: 'order',
+            event: 'purchase',
             data: data
           })
         }
@@ -99,4 +102,66 @@
     }, 1)
     return xhrSend.apply(this, [].slice.call(arguments))
   }
+})()
+
+(function () {
+  const btn = document.getElementsByClassName('ion-page')
+  btn[0].addEventListener('click', event => {
+    const clickedElement = event.target
+    if ((clickedElement.tagName === 'ION-BUTTON') && (clickedElement.textContent.includes('Adicionar R$ '))) {
+      // console.log(clickedElement.tagName)
+      const DB_NAME = '_ionicstorage'
+      const DB_STORE = '_ionickv'
+      const DB_VERSION = 2
+
+      const openRequest = window.indexedDB.open(DB_NAME, DB_VERSION)
+
+      openRequest.onsuccess = function () {
+        const DB = openRequest.result
+        const transaction = DB.transaction(DB_STORE)
+        const store = transaction.objectStore(DB_STORE)
+        const query = store.get('cart')
+
+        query.onsuccess = function () {
+          const cart = query.result
+          const itemCart = cart[cart.length - 1]
+          const itemView = VIEW[VIEW.length - 1].items[0]
+
+          const view = {}
+          view.affiliation = (itemCart.id === itemView.item_id) ? itemView.affiliation : 'N/D'
+          view.item_brand = (itemCart.id === itemView.item_id) ? itemView.item_brand : 'N/D'
+          view.item_category = (itemCart.id === itemView.item_id) ? itemView.item_category : 'N/D'
+
+          const data = {
+            currency: 'BRL',
+            items: [{
+              item_id: itemCart.id,
+              item_name: itemCart.name,
+              affiliation: view.affiliation,
+              item_brand: view.item_brand,
+              item_category: view.item_category,
+              item_variant: itemCart.modifiers,
+              price: itemCart.total,
+              currency: 'BRL',
+              quantity: itemCart.quantity
+            }],
+            value: itemCart.total
+          }
+
+          dataLayer.push({
+            event: 'add_to_cart',
+            data: data
+          })
+        }
+
+        query.onerror = function () {
+          console.log('Error: ', query.error)
+        }
+      }
+
+      openRequest.onerror = function () {
+        console.log('Error: ', openRequest.error)
+      }
+    }
+  })
 })()
