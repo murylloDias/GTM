@@ -1,4 +1,4 @@
-const VIEW = []
+const VIEW = [];
 
 (function () {
   const xhrOpen = window.XMLHttpRequest.prototype.open
@@ -102,7 +102,7 @@ const VIEW = []
     }, 1)
     return xhrSend.apply(this, [].slice.call(arguments))
   }
-})()
+})();
 
 (function () {
   const btn = document.getElementsByClassName('ion-page')
