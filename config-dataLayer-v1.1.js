@@ -131,7 +131,7 @@ const CART = [];
           view.affiliation = (itemCart.id === itemView.item_id) ? itemView.affiliation : 'N/D'
           view.item_brand = (itemCart.id === itemView.item_id) ? itemView.item_brand : 'N/D'
           view.item_category = (itemCart.id === itemView.item_id) ? itemView.item_category : 'N/D'
-          view.item_variant = (itemCart.modifiers.length === 0) ? itemView.item_variant : itemCart.modifiers // ultima alteração foi nessa linha, precisa testar!
+          view.item_variant = (itemCart.modifiers.length === 0) ? itemView.item_variant : itemCart.modifiers
 
           const data = {
             currency: 'BRL',
@@ -171,9 +171,9 @@ const CART = [];
 (function () {
   const btn = document.getElementsByClassName('ion-page')
   btn[0].addEventListener('click', event => {
+    console.log(event)
     const clickedElement = event.target
-    if ((clickedElement.tagName === 'DIV') && (clickedElement.textContent.includes('Ver itens R$'))) {
-      console.log(event)
+    if (((clickedElement.tagName === 'DIV') || (clickedElement.tagName === 'P')) && (clickedElement.textContent.includes('Ver itens'))) {
       const total = CART.reduce((total, item) => {
         return total + item.price
       }, 0)
@@ -184,6 +184,79 @@ const CART = [];
           currency: 'BRL',
           items: CART,
           value: total
+        }
+      })
+    }
+  })
+})();
+
+(function () {
+  const btn = document.getElementsByClassName('ion-page')
+  btn[0].addEventListener('click', event => {
+    const clieckedElement = event.target
+    if ((clieckedElement.tagName === 'ION-BUTTON') && (clieckedElement.textContent === 'Selecionar')) {
+      setTimeout(() => {
+        console.log(event)
+        const data = window.localStorage.getItem('payment')
+        const payment = JSON.parse(data)
+        const type = payment ? payment.selectedPayment.name : 'N/D'
+        const total = CART.reduce((total, item) => {
+          return total + item.price
+        }, 0)
+
+        dataLayer.push({
+          event: 'add_payment_info',
+          ecommerce: {
+            currency: 'BRL',
+            items: CART,
+            payment_type: type,
+            value: total
+          }
+        })
+      }, 1000)
+    }
+  })
+})();
+
+(function () {
+  const btn = document.getElementsByClassName('ion-page')
+  btn[0].addEventListener('click', event => {
+    const clickedElement = event.target
+    if ((clickedElement.tagName === 'ION-BUTTON') && ((clickedElement.textContent === 'Salvar') || (clickedElement.textContent === 'Continuar'))) {
+      const total = CART.reduce((total, item) => {
+        return total + item.price
+      }, 0)
+
+      dataLayer.push({
+        event: 'add_shipping_info',
+        ecommerce: {
+          currency: 'BRL',
+          items: CART,
+          shipping_tier: 'Entrega/Retirada',
+          value: total
+        }
+      })
+    }
+  })
+})();
+
+(function () {
+  const btn = document.getElementsByClassName('ion-page')
+  btn[0].addEventListener('click', event => {
+    const clickedElement = event.target
+    if ((clickedElement.tagName === 'SPAN') && (clickedElement.textContent === 'Remover')) {
+      const element = document.getElementsByClassName('alert-message sc-ion-alert-ios')
+      const str = element[0].innerText
+      const name = str.substring(3, str.length)
+
+      CART.forEach((item, index) => {
+        if (item.item_name === name) {
+          dataLayer.push({
+            event: 'remove_from_cart',
+            items: item,
+            value: item.price
+          })
+          CART.splice(index, 1)
         }
       })
     }
