@@ -18,10 +18,10 @@ const CART = [];
       }
       const inExcludeList = window.ajrS && window.ajrS.length > 0 ? window.ajrS.filter(e => xhr.url.startsWith(e.url)).length > 0 : false
       if (!inExcludeList) {
-        const info = window.localStorage.getItem('info')
-        const network = JSON.parse(info)
-        const marca = network.name
-        const stores = network.stores
+        const str = window.localStorage.getItem('info')
+        const info = JSON.parse(str)
+        const marca = info.rede[0].nomeRede
+        const stores = info.lojas
 
         if ((xhr.url.indexOf('details') !== -1) && (xhr.url.indexOf('store') !== -1)) {
           const eventLabel = (xhr.url.indexOf('widget=') !== -1) ? '' : xhr.responseText
@@ -36,6 +36,8 @@ const CART = [];
           })
 
           const data = {
+            page_title: getTitle() + ' | Menu',
+            page_location: getTitle('cart/?'),
             currency: 'BRL',
             items: [{
               item_id: obj._id,
@@ -58,6 +60,8 @@ const CART = [];
             event: 'view_item',
             ecommerce: data
           })
+
+          gtag('event', 'view_item', data)
 
           VIEW.push(data.items[0])
         }
@@ -83,6 +87,8 @@ const CART = [];
           })
 
           const data = {
+            page_title: getTitle() + ' | Order',
+            page_location: getUTM('order/?'),
             affiliation: obj.store.name,
             coupon: cupom,
             currency: 'BRL',
@@ -97,6 +103,8 @@ const CART = [];
             event: 'purchase',
             ecommerce: data
           })
+
+          gtag('event', 'purchase', data)
         }
       }
       clearInterval(intervalId)
@@ -134,6 +142,8 @@ const CART = [];
           view.item_variant = (itemCart.modifiers.length === 0) ? itemView.item_variant : itemCart.modifiers
 
           const data = {
+            page_title: getTitle() + ' | Cart',
+            page_location: getUTM('cart/?'),
             currency: 'BRL',
             items: [{
               item_id: itemCart.id,
@@ -153,6 +163,9 @@ const CART = [];
             event: 'add_to_cart',
             ecommerce: data
           })
+
+          gtag('event', 'add_to_cart', data)
+
           CART.push(data.items[0])
         }
 
@@ -178,14 +191,20 @@ const CART = [];
         return total + item.price
       }, 0)
 
+      const data = {
+        page_title: getTitle() + ' | Cart',
+        page_location: getUTM('cart/?'),
+        currency: 'BRL',
+        items: CART,
+        value: total
+      }
+
       dataLayer.push({
         event: 'begin_checkout',
-        ecommerce: {
-          currency: 'BRL',
-          items: CART,
-          value: total
-        }
+        ecommerce: data
       })
+
+      gtag('event', 'begin_checkout', data)
     }
   })
 })();
@@ -204,15 +223,22 @@ const CART = [];
           return total + item.price
         }, 0)
 
+        const data = {
+          page_title: getTitle() + ' | Cart',
+          page_location: getUTM('cart/?'),
+          currency: 'BRL',
+          items: CART,
+          payment_type: type,
+          value: total
+        }
+
         dataLayer.push({
           event: 'add_payment_info',
-          ecommerce: {
-            currency: 'BRL',
-            items: CART,
-            payment_type: type,
-            value: total
-          }
+          ecommerce: data
         })
+
+        gtag('event', 'add_payment_info', data)
+
       }, 1000)
     }
   })
@@ -227,15 +253,21 @@ const CART = [];
         return total + item.price
       }, 0)
 
+      const data = {
+        page_title: getTitle() + ' | Cart',
+        page_location: getUTM('cart/?'),
+        currency: 'BRL',
+        items: CART,
+        shipping_tier: 'Entrega/Retirada',
+        value: total
+      }
+
       dataLayer.push({
         event: 'add_shipping_info',
-        ecommerce: {
-          currency: 'BRL',
-          items: CART,
-          shipping_tier: 'Entrega/Retirada',
-          value: total
-        }
+        ecommerce: data
       })
+
+      gtag('event', 'add_shipping_info', data)
     }
   })
 })();
@@ -251,14 +283,49 @@ const CART = [];
 
       CART.forEach((item, index) => {
         if (item.item_name === name) {
-          dataLayer.push({
-            event: 'remove_from_cart',
+          const data = {
+            page_title: getTitle() + ' | Cart',
+            page_location: getUTM('cart/?'),
+            currency: 'BRL',
             items: item,
             value: item.price
+          }
+
+          dataLayer.push({
+            event: 'remove_from_cart',
+            ecommerce: data
           })
+
+          gtag('event', 'remove_from_cart', data)
+
           CART.splice(index, 1)
         }
       })
     }
   })
-})()
+})();
+
+(function () {
+  dataLayer.push({
+    event: 'page_view',
+    page_title: getTitle() + ' | Home',
+    page_location: getUTM('home/?')
+  })
+})();
+
+
+function getUTM (page) {
+  var data = window.performance.getEntries()
+  var url = data[0].name
+
+  if (url.includes('menu')) {
+    return url
+  } else {
+    var str = url.split('?')
+    return str[0] + page + str[1]
+  }
+}
+
+function getTitle () {
+  return document.title
+}
