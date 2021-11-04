@@ -56,6 +56,11 @@ const CART = [];
             value: obj.price.actualPrice
           }
 
+          dataLayer.push({
+            event: 'view_item',
+            ecommerce: ecommerce
+          })
+
           gtag('event', 'view_item', ecommerce)
 
           VIEW.push(ecommerce.items[0])
@@ -93,6 +98,11 @@ const CART = [];
             value: obj.total,
             tax: 0
           }
+
+          dataLayer.push({
+            event: 'purchase',
+            ecommerce: ecommerce
+          })
 
           gtag('event', 'purchase', ecommerce)
         }
@@ -149,6 +159,11 @@ const CART = [];
             value: itemCart.total
           }
 
+          dataLayer.push({
+            event: 'add_to_cart',
+            ecommerce: ecommerce
+          })
+
           gtag('event', 'add_to_cart', ecommerce)
 
           CART.push(ecommerce.items[0])
@@ -184,6 +199,11 @@ const CART = [];
         value: total
       }
 
+      dataLayer.push({
+        event: 'begin_checkout',
+        ecommerce: ecommerce
+      })
+
       gtag('event', 'begin_checkout', ecommerce)
     }
   })
@@ -212,6 +232,11 @@ const CART = [];
           value: total
         }
 
+        dataLayer.push({
+          event: 'add_payment_info',
+          ecommerce: ecommerce
+        })
+
         gtag('event', 'add_payment_info', ecommerce)
       }, 1000)
     }
@@ -235,6 +260,11 @@ const CART = [];
         shipping_tier: 'Entrega/Retirada',
         value: total
       }
+
+      dataLayer.push({
+        event: 'add_shipping_info',
+        ecommerce: ecommerce
+      })
 
       gtag('event', 'add_shipping_info', ecommerce)
     }
@@ -260,6 +290,11 @@ const CART = [];
             value: item.price
           }
 
+          dataLayer.push({
+            event: 'remove_from_cart',
+            ecommerce: ecommerce
+          })
+
           gtag('event', 'remove_from_cart', ecommerce)
 
           CART.splice(index, 1)
@@ -270,6 +305,12 @@ const CART = [];
 })();
 
 (function () {
+  dataLayer.push({
+    event: 'page_view',
+    page_title: getTitle() + ' | Home',
+    page_location: getUTM('home/?')
+  })
+
   gtag('event', 'page_view', {
     page_title: getTitle() + ' | Home',
     page_location: getUTM('home/?')
