@@ -35,9 +35,9 @@ const CART = [];
             }
           })
 
-          const data = {
+          const ecommerce = {
             page_title: getTitle() + ' | Menu',
-            page_location: getTitle('cart/?'),
+            page_location: getTitle('menu/?'),
             currency: 'BRL',
             items: [{
               item_id: obj._id,
@@ -56,14 +56,9 @@ const CART = [];
             value: obj.price.actualPrice
           }
 
-          dataLayer.push({
-            event: 'view_item',
-            ecommerce: data
-          })
+          gtag('event', 'view_item', ecommerce)
 
-          gtag('event', 'view_item', data)
-
-          VIEW.push(data.items[0])
+          VIEW.push(ecommerce.items[0])
         }
 
         if ((xhr.url === 'https://api.accon.app/v1/order') && (xhr.method === 'POST')) {
@@ -86,7 +81,7 @@ const CART = [];
             return product
           })
 
-          const data = {
+          const ecommerce = {
             page_title: getTitle() + ' | Order',
             page_location: getUTM('order/?'),
             affiliation: obj.store.name,
@@ -99,12 +94,7 @@ const CART = [];
             tax: 0
           }
 
-          dataLayer.push({
-            event: 'purchase',
-            ecommerce: data
-          })
-
-          gtag('event', 'purchase', data)
+          gtag('event', 'purchase', ecommerce)
         }
       }
       clearInterval(intervalId)
@@ -141,7 +131,7 @@ const CART = [];
           view.item_category = (itemCart.id === itemView.item_id) ? itemView.item_category : 'N/D'
           view.item_variant = (itemCart.modifiers.length === 0) ? itemView.item_variant : itemCart.modifiers
 
-          const data = {
+          const ecommerce = {
             page_title: getTitle() + ' | Cart',
             page_location: getUTM('cart/?'),
             currency: 'BRL',
@@ -159,14 +149,9 @@ const CART = [];
             value: itemCart.total
           }
 
-          dataLayer.push({
-            event: 'add_to_cart',
-            ecommerce: data
-          })
+          gtag('event', 'add_to_cart', ecommerce)
 
-          gtag('event', 'add_to_cart', data)
-
-          CART.push(data.items[0])
+          CART.push(ecommerce.items[0])
         }
 
         query.onerror = function () {
@@ -191,7 +176,7 @@ const CART = [];
         return total + item.price
       }, 0)
 
-      const data = {
+      const ecommerce = {
         page_title: getTitle() + ' | Cart',
         page_location: getUTM('cart/?'),
         currency: 'BRL',
@@ -199,12 +184,7 @@ const CART = [];
         value: total
       }
 
-      dataLayer.push({
-        event: 'begin_checkout',
-        ecommerce: data
-      })
-
-      gtag('event', 'begin_checkout', data)
+      gtag('event', 'begin_checkout', ecommerce)
     }
   })
 })();
@@ -223,7 +203,7 @@ const CART = [];
           return total + item.price
         }, 0)
 
-        const data = {
+        const ecommerce = {
           page_title: getTitle() + ' | Cart',
           page_location: getUTM('cart/?'),
           currency: 'BRL',
@@ -232,13 +212,7 @@ const CART = [];
           value: total
         }
 
-        dataLayer.push({
-          event: 'add_payment_info',
-          ecommerce: data
-        })
-
-        gtag('event', 'add_payment_info', data)
-
+        gtag('event', 'add_payment_info', ecommerce)
       }, 1000)
     }
   })
@@ -253,7 +227,7 @@ const CART = [];
         return total + item.price
       }, 0)
 
-      const data = {
+      const ecommerce = {
         page_title: getTitle() + ' | Cart',
         page_location: getUTM('cart/?'),
         currency: 'BRL',
@@ -262,12 +236,7 @@ const CART = [];
         value: total
       }
 
-      dataLayer.push({
-        event: 'add_shipping_info',
-        ecommerce: data
-      })
-
-      gtag('event', 'add_shipping_info', data)
+      gtag('event', 'add_shipping_info', ecommerce)
     }
   })
 })();
@@ -283,7 +252,7 @@ const CART = [];
 
       CART.forEach((item, index) => {
         if (item.item_name === name) {
-          const data = {
+          const ecommerce = {
             page_title: getTitle() + ' | Cart',
             page_location: getUTM('cart/?'),
             currency: 'BRL',
@@ -291,12 +260,7 @@ const CART = [];
             value: item.price
           }
 
-          dataLayer.push({
-            event: 'remove_from_cart',
-            ecommerce: data
-          })
-
-          gtag('event', 'remove_from_cart', data)
+          gtag('event', 'remove_from_cart', ecommerce)
 
           CART.splice(index, 1)
         }
@@ -306,22 +270,20 @@ const CART = [];
 })();
 
 (function () {
-  dataLayer.push({
-    event: 'page_view',
+  gtag('event', 'page_view', {
     page_title: getTitle() + ' | Home',
     page_location: getUTM('home/?')
   })
-})();
-
+})()
 
 function getUTM (page) {
-  var data = window.performance.getEntries()
-  var url = data[0].name
+  const data = window.performance.getEntries()
+  const url = data[0].name
 
   if (url.includes('menu')) {
     return url
   } else {
-    var str = url.split('?')
+    const str = url.split('?')
     return str[0] + page + str[1]
   }
 }
