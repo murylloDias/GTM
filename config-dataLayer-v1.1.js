@@ -56,11 +56,6 @@ const CART = [];
             value: obj.price.actualPrice
           }
 
-          /* dataLayer.push({
-            event: 'view_item',
-            ecommerce: ecommerce
-          }) */
-
           gtag('event', 'view_item', ecommerce)
 
           VIEW.push(ecommerce.items[0])
@@ -98,11 +93,6 @@ const CART = [];
             value: obj.total,
             tax: 0
           }
-
-          /* dataLayer.push({
-            event: 'purchase',
-            ecommerce: ecommerce
-          }) */
 
           gtag('event', 'purchase', ecommerce)
         }
@@ -159,11 +149,6 @@ const CART = [];
             value: itemCart.total
           }
 
-          /* dataLayer.push({
-            event: 'add_to_cart',
-            ecommerce: ecommerce
-          }) */
-
           gtag('event', 'add_to_cart', ecommerce)
 
           CART.push(ecommerce.items[0])
@@ -184,7 +169,6 @@ const CART = [];
 (function () {
   const btn = document.getElementsByClassName('ion-page')
   btn[0].addEventListener('click', event => {
-    console.log(event)
     const clickedElement = event.target
     if (((clickedElement.tagName === 'DIV') || (clickedElement.tagName === 'P')) && (clickedElement.textContent.includes('Ver itens'))) {
       const total = CART.reduce((total, item) => {
@@ -199,11 +183,6 @@ const CART = [];
         value: total
       }
 
-      /* dataLayer.push({
-        event: 'begin_checkout',
-        ecommerce: ecommerce
-      }) */
-
       gtag('event', 'begin_checkout', ecommerce)
     }
   })
@@ -215,7 +194,6 @@ const CART = [];
     const clieckedElement = event.target
     if ((clieckedElement.tagName === 'ION-BUTTON') && (clieckedElement.textContent === 'Selecionar')) {
       setTimeout(() => {
-        console.log(event)
         const data = window.localStorage.getItem('payment')
         const payment = JSON.parse(data)
         const type = payment ? payment.selectedPayment.name : 'N/D'
@@ -231,11 +209,6 @@ const CART = [];
           payment_type: type,
           value: total
         }
-
-        /* dataLayer.push({
-          event: 'add_payment_info',
-          ecommerce: ecommerce
-        }) */
 
         gtag('event', 'add_payment_info', ecommerce)
       }, 1000)
@@ -261,11 +234,6 @@ const CART = [];
         value: total
       }
 
-      /* dataLayer.push({
-        event: 'add_shipping_info',
-        ecommerce: ecommerce
-      }) */
-
       gtag('event', 'add_shipping_info', ecommerce)
     }
   })
@@ -290,11 +258,6 @@ const CART = [];
             value: item.price
           }
 
-          /* dataLayer.push({
-            event: 'remove_from_cart',
-            ecommerce: ecommerce
-          }) */
-
           gtag('event', 'remove_from_cart', ecommerce)
 
           CART.splice(index, 1)
@@ -305,12 +268,6 @@ const CART = [];
 })();
 
 (function () {
-  /* dataLayer.push({
-    event: 'page_view',
-    page_title: getTitle() + ' | Home',
-    page_location: getUTM('home/?')
-  }) */
-
   gtag('event', 'page_view', {
     page_title: getTitle() + ' | Home',
     page_location: getUTM('home/?')
