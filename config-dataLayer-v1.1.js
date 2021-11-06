@@ -37,7 +37,7 @@ const CART = [];
             })
 
             const ecommerce = {
-              page_title: getTitle() + ' | Produto',
+              page_title: getTitle('Produto'),
               page_location: getUTM('product/?'),
               currency: 'BRL',
               items: [{
@@ -62,7 +62,7 @@ const CART = [];
             VIEW.push(ecommerce.items[0])
           }
 
-          if ((xhr.url === 'https://api.accon.app/v1/order') && (xhr.method === 'POST')) {
+          if ((xhr.url === 'https://api.accon.app/v1/order') && (xhr.method === 'POST') && (xhr.status === 201)) {
             const eventLabel = (xhr.url.indexOf('widget=') !== -1) ? '' : xhr.responseText
             const obj = JSON.parse(eventLabel)
 
@@ -83,7 +83,7 @@ const CART = [];
             })
 
             const ecommerce = {
-              page_title: getTitle() + ' | Pedido',
+              page_title: getTitle('Pedido'),
               page_location: getUTM('order/?'),
               affiliation: obj.store.name,
               coupon: cupom,
@@ -137,7 +137,7 @@ const CART = [];
             view.item_variant = (itemCart.modifiers.length === 0) ? itemView.item_variant : itemCart.modifiers
 
             const ecommerce = {
-              page_title: getTitle() + ' | Carrinho',
+              page_title: getTitle('Carrinho'),
               page_location: getUTM('cart/?'),
               currency: 'BRL',
               items: [{
@@ -185,7 +185,7 @@ const CART = [];
         }, 0)
 
         const ecommerce = {
-          page_title: getTitle() + ' | Carrinho',
+          page_title: getTitle('Carrinho'),
           page_location: getUTM('cart/?'),
           currency: 'BRL',
           items: CART,
@@ -215,7 +215,7 @@ const CART = [];
           }, 0)
 
           const ecommerce = {
-            page_title: getTitle() + ' | Carrinho',
+            page_title: getTitle('Carrinho'),
             page_location: getUTM('payments/?'),
             currency: 'BRL',
             items: CART,
@@ -243,7 +243,7 @@ const CART = [];
         }, 0)
 
         const ecommerce = {
-          page_title: getTitle() + ' | Carrinho',
+          page_title: getTitle('Carrinho'),
           page_location: getUTM('change-address/?'),
           currency: 'BRL',
           items: CART,
@@ -272,7 +272,7 @@ const CART = [];
         CART.forEach((item, index) => {
           if (item.item_name === name) {
             const ecommerce = {
-              page_title: getTitle() + ' | Carrinho',
+              page_title: getTitle('Carrinho'),
               page_location: getUTM('cart/?'),
               currency: 'BRL',
               items: item,
@@ -294,7 +294,7 @@ const CART = [];
 (function () {
   try {
     gtag('event', 'page_view', {
-      page_title: getTitle() + ' | Menu',
+      page_title: getTitle('Menu'),
       page_location: getUTM('menu/?')
     })
   } catch (e) {
@@ -306,15 +306,30 @@ const CART = [];
   try {
     const btn = document.getElementsByClassName('ion-page')
     btn[0].addEventListener('click', event => {
-      // console.log(event)
       const clickedElement = event.target
       if ((clickedElement.tagName === 'ION-BUTTON') && (clickedElement.innerText === 'Enviar')) {
-        /* gtag('event', 'login', {
-          method: 'Password'
-        }) */
-        dataLayer.push({
-          event: 'login',
-          method: 'Password'
+        gtag('event', 'login', {
+          page_title: getTitle('Login'),
+          page_location: getUTM('login/?'),
+          method: 'E-mail/Password'
+        })
+      }
+    })
+  } catch (e) {
+    console.error(e.message)
+  }
+})();
+
+(function () {
+  try {
+    const btn = document.getElementsByClassName('ion-page')
+    btn[0].addEventListener('click', event => {
+      const clickedElement = event.target
+      if ((clickedElement.tagName === 'ION-BUTTON') && (clickedElement.textContent === ' Cadastrar')) {
+        gtag('event', 'sign_up', {
+          page_title: getTitle('SiginUp'),
+          page_location: getUTM('signup/?'),
+          method: 'E-mail/Password'
         })
       }
     })
@@ -335,6 +350,6 @@ function getUTM (page) {
   }
 }
 
-function getTitle () {
-  return document.title
+function getTitle (pageName) {
+  return document.title + ' | ' + pageName
 }
