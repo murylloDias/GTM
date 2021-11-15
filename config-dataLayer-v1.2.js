@@ -38,7 +38,7 @@ const CART = [];
 
             const ecommerce = {
               page_title: getTitle('Produto'),
-              page_location: getUTM('product/?'),
+              //page_location: getUTM('product/?'),
               currency: 'BRL',
               items: [{
                 item_id: obj._id,
@@ -57,10 +57,11 @@ const CART = [];
               value: obj.price.actualPrice
             }
 
+            customUrl('product/?')
+
             gtag('event', 'view_item', ecommerce)
 
             fbq('track', 'ViewContent', {
-              content_ids: obj._id,
               content_category: obj.group,
               content_name: obj.printDescription,
               content_type: 'product',
@@ -103,9 +104,11 @@ const CART = [];
               return content
             })
 
+            customUrl('order/?')
+
             gtag('event', 'purchase', {
               page_title: getTitle('Pedido'),
-              page_location: getUTM('order/?'),
+              //page_location: getUTM('order/?'),
               affiliation: obj.store.name,
               coupon: cupom,
               currency: 'BRL',
@@ -121,7 +124,7 @@ const CART = [];
               currency: 'BRL',
               contents: contents,
               content_type: 'product'
-            });            
+            })
           }
         }
         clearInterval(intervalId)
@@ -164,7 +167,7 @@ const CART = [];
 
             const ecommerce = {
               page_title: getTitle('Carrinho'),
-              page_location: getUTM('cart/?'),
+              //page_location: getUTM('cart/?'),
               currency: 'BRL',
               items: [{
                 item_id: itemCart.id,
@@ -179,6 +182,8 @@ const CART = [];
               }],
               value: itemCart.total
             }
+
+            customUrl('cart/?')
 
             gtag('event', 'add_to_cart', ecommerce)
 
@@ -224,14 +229,16 @@ const CART = [];
 
         const contents = getContents()
 
+        customUrl('cart/?')
+
         gtag('event', 'begin_checkout', {
           page_title: getTitle('Carrinho'),
-          page_location: getUTM('cart/?'),
+          //page_location: getUTM('cart/?'),
           currency: 'BRL',
           items: CART,
           value: total
         })
-        
+
         fbq('track', 'InitiateCheckout', {
           contents: contents,
           currency: 'BRL',
@@ -261,9 +268,11 @@ const CART = [];
 
           const contents = getContents()
 
+          customUrl('payments/?')
+
           gtag('event', 'add_payment_info', {
             page_title: getTitle('Carrinho'),
-            page_location: getUTM('payments/?'),
+            //page_location: getUTM('payments/?'),
             currency: 'BRL',
             items: CART,
             payment_type: type,
@@ -275,7 +284,6 @@ const CART = [];
             currency: 'BRL',
             value: total
           })
-
         }, 1000)
       }
     })
@@ -296,12 +304,14 @@ const CART = [];
 
         const ecommerce = {
           page_title: getTitle('Carrinho'),
-          page_location: getUTM('change-address/?'),
+          //page_location: getUTM('change-address/?'),
           currency: 'BRL',
           items: CART,
           shipping_tier: 'Entrega/Retirada',
           value: total
         }
+
+        customUrl('change-address/?')
 
         gtag('event', 'add_shipping_info', ecommerce)
       }
@@ -325,11 +335,13 @@ const CART = [];
           if (item.item_name === name) {
             const ecommerce = {
               page_title: getTitle('Carrinho'),
-              page_location: getUTM('cart/?'),
+              //page_location: getUTM('cart/?'),
               currency: 'BRL',
               items: item,
               value: item.price
             }
+
+            customUrl('cart/?')
 
             gtag('event', 'remove_from_cart', ecommerce)
 
@@ -345,13 +357,14 @@ const CART = [];
 
 (function () {
   try {
+    customUrl('menu/?')
+
     gtag('event', 'page_view', {
       page_title: getTitle('Menu'),
-      page_location: getUTM('menu/?')
+      //page_location: getUTM('menu/?')
     })
 
     fbq('track', 'PageView')
-
   } catch (e) {
     console.error(e.message)
   }
@@ -363,9 +376,11 @@ const CART = [];
     btn[0].addEventListener('click', event => {
       const clickedElement = event.target
       if ((clickedElement.tagName === 'ION-BUTTON') && (clickedElement.innerText === 'Enviar')) {
+        customUrl('login/?')
+
         gtag('event', 'login', {
           page_title: getTitle('Login'),
-          page_location: getUTM('login/?'),
+          //page_location: getUTM('login/?'),
           method: 'E-mail/Password'
         })
       }
@@ -381,9 +396,11 @@ const CART = [];
     btn[0].addEventListener('click', event => {
       const clickedElement = event.target
       if ((clickedElement.tagName === 'ION-BUTTON') && (clickedElement.textContent === ' Cadastrar')) {
+        customUrl('signup/?')
+
         gtag('event', 'sign_up', {
           page_title: getTitle('SiginUp'),
-          page_location: getUTM('signup/?'),
+          //page_location: getUTM('signup/?'),
           method: 'E-mail/Password'
         })
 
@@ -398,7 +415,16 @@ const CART = [];
   }
 })()
 
-function getUTM (page) {
+function customUrl(pageName) {
+  const data = window.performance.getEntries()
+  const url = data[0].name
+  const str = url.split('?')
+  const param = str[1] ? pageName + str[1] : ''
+
+  window.history.pushState({}, '', param)
+}
+
+function getUTM(page) {
   const data = window.performance.getEntries()
   const url = data[0].name
 
@@ -410,12 +436,11 @@ function getUTM (page) {
   }
 }
 
-function getTitle (pageName) {
+function getTitle(pageName) {
   return document.title + ' | ' + pageName
 }
 
-
-function getContents () {
+function getContents() {
   const contents = CART.map(item => {
     const data = {
       id: item.item_id,
