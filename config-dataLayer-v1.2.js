@@ -113,12 +113,12 @@ const CART = [];
               tax: 0
             })
 
-            fbq('track', 'Purchase', {
+            /* fbq('track', 'Purchase', {
               value: obj.total,
               currency: 'BRL',
               contents: contents,
               content_type: 'product'
-            })
+            }) */
           }
         }
         clearInterval(intervalId)
@@ -227,12 +227,12 @@ const CART = [];
           value: total
         })
 
-        fbq('track', 'InitiateCheckout', {
+        /* fbq('track', 'InitiateCheckout', {
           contents: contents,
           currency: 'BRL',
           num_items: CART.length,
           value: total
-        })
+        }) */
       }
     })
   } catch (e) {
@@ -338,6 +338,10 @@ const CART = [];
   try {
     customUrl()
 
+    gtag('event', 'page_view', {
+      page_title: getTitle('Menu')
+    })
+
     fbq('track', 'PageView')
   } catch (e) {
     console.error(e.message)
@@ -383,7 +387,7 @@ const CART = [];
   }
 })()
 
-function customUrl () {
+function customUrl() {
   const data = window.performance.getEntries()
   const url = data[0].name
   const str = url.split('?')
@@ -392,7 +396,7 @@ function customUrl () {
   window.history.replaceState({}, '', 'menu/?' + param)
 }
 
-function getUTM (page) {
+function getUTM(page) {
   const data = window.performance.getEntries()
   const url = data[0].name
 
@@ -404,11 +408,11 @@ function getUTM (page) {
   }
 }
 
-function getTitle (pageName) {
+function getTitle(pageName) {
   return document.title + ' | ' + pageName
 }
 
-function getContents () {
+function getContents() {
   const contents = CART.map(item => {
     const data = {
       id: item.item_id,
