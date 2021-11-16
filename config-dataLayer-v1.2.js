@@ -391,7 +391,7 @@ function customUrl() {
   const data = window.performance.getEntries()
   const url = data[0].name
   const str = url.split('?')
-  const param = str[1] ? str[1] : '/menu'
+  const param = str[1]
 
   window.history.replaceState({}, '', 'menu/?' + param)
 }
