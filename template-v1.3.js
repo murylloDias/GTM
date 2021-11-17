@@ -15,7 +15,7 @@ localStorage.setItem('info', JSON.stringify(info))
 
 const url = ''
 
-if (queryPermission('injectScript', url)) {
+if (queryPermission('inject_script', url)) {
   injectScript(url, data.gtmOnSuccess, data.gtmOnFailure, url)
 }
 
