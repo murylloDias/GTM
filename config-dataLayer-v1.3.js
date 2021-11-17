@@ -43,8 +43,8 @@ const CART = [];
 
             let storeName
             stores.forEach(store => {
-              if (store.id === url.searchParams.get('store')) {
-                storeName = store.name
+              if (store.storeID === url.searchParams.get('store')) {
+                storeName = store.storeName
               }
             })
 
@@ -56,7 +56,7 @@ const CART = [];
                 item_id: obj._id,
                 item_name: obj.printDescription,
                 coupon: '',
-                discount: obj.price.discount,
+                discount: obj.price.discount || 0,
                 affiliation: storeName,
                 item_brand: marca,
                 item_category: obj.group,
