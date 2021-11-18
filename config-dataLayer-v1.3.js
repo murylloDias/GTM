@@ -66,7 +66,11 @@ const CART = [];
                 index: obj.order,
                 quantity: 1
               }],
-              value: obj.price.actualPrice
+              value: obj.price.actualPrice,
+              contents: [{
+                id: obj._id,
+                quantity: 1
+              }]
             }
 
             dataLayer.push({
@@ -97,6 +101,14 @@ const CART = [];
               return product
             })
 
+            const contents = obj.products.map(item => {
+              const content = {
+                id: item.id,
+                quantity: item.quantity
+              }
+              return content
+            })
+
             customTitle('Pedido')
 
             const ecommerce = {
@@ -107,7 +119,8 @@ const CART = [];
               transaction_id: obj._id,
               shipping: obj.deliveryTax,
               value: obj.total,
-              tax: 0
+              tax: 0,
+              contents: contents
             }
 
             dataLayer.push({
@@ -169,7 +182,11 @@ const CART = [];
                 currency: 'BRL',
                 quantity: itemCart.quantity
               }],
-              value: itemCart.total
+              value: itemCart.total,
+              contents: [{
+                id: itemCart.id,
+                quantity: itemCart.quantity
+              }]
             }
 
             dataLayer.push({
@@ -207,12 +224,15 @@ const CART = [];
 
         customTitle('Carrinho')
 
+        const contents = getContents()
+
         dataLayer.push({
           event: 'begin_checkout',
           ecommerce: {
             currency: 'BRL',
             items: CART,
-            value: total
+            value: total,
+            contents: contents
           }
         })
       }
@@ -238,13 +258,16 @@ const CART = [];
 
           customTitle('Carrinho')
 
+          const contents = getContents()
+
           dataLayer.push({
             event: 'add_payment_info',
             ecommerce: {
               currency: 'BRL',
               items: CART,
               payment_type: type,
-              value: total
+              value: total,
+              contents: contents
             }
           })
         }, 1000)
@@ -267,11 +290,14 @@ const CART = [];
 
         customTitle('Carrinho')
 
+        const contents = getContents()
+
         const ecommerce = {
           currency: 'BRL',
           items: CART,
           shipping_tier: 'Entrega/Retirada',
-          value: total
+          value: total,
+          contents: contents
         }
 
         dataLayer.push({
@@ -302,7 +328,11 @@ const CART = [];
             const ecommerce = {
               currency: 'BRL',
               items: item,
-              value: item.price
+              value: item.price,
+              contents: [{
+                id: item.item_id,
+                quantity: item.quantity
+              }]
             }
 
             dataLayer.push({
@@ -378,4 +408,15 @@ function customTitle(titleName) {
   } else {
     document.title = title + ' | ' + titleName
   }
+}
+
+function getContents() {
+  const contents = CART.map(item => {
+    const data = {
+      id: item.item_id,
+      quantity: item.quantity
+    }
+    return data
+  })
+  return contents
 }
