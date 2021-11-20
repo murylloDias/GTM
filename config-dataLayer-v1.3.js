@@ -67,12 +67,10 @@ const CART = [];
                 quantity: 1
               }],
               value: obj.price.actualPrice,
-              contents: [
-                JSON.stringify({
-                  id: obj._id,
-                  quantity: 1
-                })
-              ]
+              contents: [{
+                id: obj._id,
+                quantity: 1
+              }]
             }
 
             dataLayer.push({
@@ -108,7 +106,7 @@ const CART = [];
                 id: item.id,
                 quantity: item.quantity
               }
-              return JSON.stringify(content)
+              return content
             })
 
             customTitle('Pedido')
@@ -185,12 +183,10 @@ const CART = [];
                 quantity: itemCart.quantity
               }],
               value: itemCart.total,
-              contents: [
-                JSON.stringify({
-                  id: itemCart.id,
-                  quantity: itemCart.quantity
-                })
-              ]
+              contents: [{
+                id: itemCart.id,
+                quantity: itemCart.quantity
+              }]
             }
 
             dataLayer.push({
@@ -333,12 +329,10 @@ const CART = [];
               currency: 'BRL',
               items: item,
               value: item.price,
-              contents: [
-                JSON.stringify({
-                  id: item.item_id,
-                  quantity: item.quantity
-                })
-              ]
+              contents: [{
+                id: item.item_id,
+                quantity: item.quantity
+              }]
             }
 
             dataLayer.push({
@@ -422,7 +416,7 @@ function getContents () {
       id: item.item_id,
       quantity: item.quantity
     }
-    return JSON.stringify(data)
+    return data
   })
   return contents
 }
