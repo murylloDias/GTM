@@ -67,10 +67,12 @@ const CART = [];
                 quantity: 1
               }],
               value: obj.price.actualPrice,
-              contents: [{
-                id: obj._id,
-                quantity: 1
-              }]
+              contents: [
+                JSON.stringify({
+                  id: obj._id,
+                  quantity: 1
+                })
+              ]
             }
 
             dataLayer.push({
@@ -106,7 +108,7 @@ const CART = [];
                 id: item.id,
                 quantity: item.quantity
               }
-              return content
+              return JSON.stringify(content)
             })
 
             customTitle('Pedido')
@@ -183,10 +185,12 @@ const CART = [];
                 quantity: itemCart.quantity
               }],
               value: itemCart.total,
-              contents: [{
-                id: itemCart.id,
-                quantity: itemCart.quantity
-              }]
+              contents: [
+                JSON.stringify({
+                  id: itemCart.id,
+                  quantity: itemCart.quantity
+                })
+              ]
             }
 
             dataLayer.push({
@@ -329,10 +333,12 @@ const CART = [];
               currency: 'BRL',
               items: item,
               value: item.price,
-              contents: [{
-                id: item.item_id,
-                quantity: item.quantity
-              }]
+              contents: [
+                JSON.stringify({
+                  id: item.item_id,
+                  quantity: item.quantity
+                })
+              ]
             }
 
             dataLayer.push({
@@ -400,7 +406,7 @@ const CART = [];
   }
 })()
 
-function customTitle(titleName) {
+function customTitle (titleName) {
   const title = document.title
   if (title.includes('|')) {
     const str = title.split('|')
@@ -410,13 +416,13 @@ function customTitle(titleName) {
   }
 }
 
-function getContents() {
+function getContents () {
   const contents = CART.map(item => {
     const data = {
       id: item.item_id,
       quantity: item.quantity
     }
-    return data
+    return JSON.stringify(data)
   })
   return contents
 }
