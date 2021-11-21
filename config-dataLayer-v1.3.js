@@ -1,5 +1,6 @@
 const VIEW = []
-const CART = [];
+const CART = []
+const USER = {}
 
 (function () {
   const data = window.performance.getEntries()
@@ -66,16 +67,13 @@ const CART = [];
                 index: obj.order,
                 quantity: 1
               }],
-              value: obj.price.actualPrice,
-              contents: [{
-                id: obj._id,
-                quantity: 1
-              }]
+              value: obj.price.actualPrice
             }
 
             dataLayer.push({
               event: 'view_item',
-              ecommerce: ecommerce
+              ecommerce: ecommerce,
+              user: USER
             })
 
             VIEW.push(ecommerce.items[0])
@@ -101,14 +99,6 @@ const CART = [];
               return product
             })
 
-            const contents = obj.products.map(item => {
-              const content = {
-                id: item.id,
-                quantity: item.quantity
-              }
-              return content
-            })
-
             customTitle('Pedido')
 
             const ecommerce = {
@@ -119,13 +109,13 @@ const CART = [];
               transaction_id: obj._id,
               shipping: obj.deliveryTax,
               value: obj.total,
-              tax: 0,
-              contents: contents
+              tax: 0
             }
 
             dataLayer.push({
               event: 'purchase',
-              ecommerce: ecommerce
+              ecommerce: ecommerce,
+              user: USER
             })
           }
         }
@@ -182,16 +172,13 @@ const CART = [];
                 currency: 'BRL',
                 quantity: itemCart.quantity
               }],
-              value: itemCart.total,
-              contents: [{
-                id: itemCart.id,
-                quantity: itemCart.quantity
-              }]
+              value: itemCart.total
             }
 
             dataLayer.push({
               event: 'add_to_cart',
-              ecommerce: ecommerce
+              ecommerce: ecommerce,
+              user: USER
             })
 
             CART.push(ecommerce.items[0])
@@ -224,16 +211,14 @@ const CART = [];
 
         customTitle('Carrinho')
 
-        const contents = getContents()
-
         dataLayer.push({
           event: 'begin_checkout',
           ecommerce: {
             currency: 'BRL',
             items: CART,
-            value: total,
-            contents: contents
-          }
+            value: total
+          },
+          user: USER
         })
       }
     })
@@ -258,17 +243,15 @@ const CART = [];
 
           customTitle('Carrinho')
 
-          const contents = getContents()
-
           dataLayer.push({
             event: 'add_payment_info',
             ecommerce: {
               currency: 'BRL',
               items: CART,
               payment_type: type,
-              value: total,
-              contents: contents
-            }
+              value: total
+            },
+            user: USER
           })
         }, 1000)
       }
@@ -289,20 +272,20 @@ const CART = [];
         }, 0)
 
         customTitle('Carrinho')
-
-        const contents = getContents()
+        getInfoUser('user')
+        getInfoUser('actualAddress')
 
         const ecommerce = {
           currency: 'BRL',
           items: CART,
           shipping_tier: 'Entrega/Retirada',
-          value: total,
-          contents: contents
+          value: total
         }
 
         dataLayer.push({
           event: 'add_shipping_info',
-          ecommerce: ecommerce
+          ecommerce: ecommerce,
+          user: USER
         })
       }
     })
@@ -327,17 +310,14 @@ const CART = [];
 
             const ecommerce = {
               currency: 'BRL',
-              items: item,
-              value: item.price,
-              contents: [{
-                id: item.item_id,
-                quantity: item.quantity
-              }]
+              items: [item],
+              value: item.price
             }
 
             dataLayer.push({
               event: 'remove_from_cart',
-              ecommerce: ecommerce
+              ecommerce: ecommerce,
+              user: USER
             })
 
             CART.splice(index, 1)
@@ -353,9 +333,12 @@ const CART = [];
 (function () {
   try {
     customTitle('Menu')
+    getInfoUser('user')
+    getInfoUser('actualAddress')
 
     dataLayer.push({
-      event: 'page_view'
+      event: 'page_view',
+      user: USER
     })
   } catch (e) {
     console.error(e.message)
@@ -369,10 +352,13 @@ const CART = [];
       const clickedElement = event.target
       if ((clickedElement.tagName === 'ION-BUTTON') && (clickedElement.innerText === 'Enviar')) {
         customTitle('Login')
+        getInfoUser('user')
+        getInfoUser('actualAddress')
 
         dataLayer.push({
           event: 'login',
-          method: 'Password'
+          method: 'Password',
+          user: USER
         })
       }
     })
@@ -388,10 +374,13 @@ const CART = [];
       const clickedElement = event.target
       if ((clickedElement.tagName === 'ION-BUTTON') && (clickedElement.textContent === ' Cadastrar')) {
         customTitle('SiginUp')
+        getInfoUser('user')
+        getInfoUser('actualAddress')
 
         dataLayer.push({
           event: 'sign_up',
-          method: 'Password'
+          method: 'Password',
+          user: USER
         })
       }
     })
@@ -400,7 +389,7 @@ const CART = [];
   }
 })()
 
-function customTitle (titleName) {
+function customTitle(titleName) {
   const title = document.title
   if (title.includes('|')) {
     const str = title.split('|')
@@ -410,13 +399,47 @@ function customTitle (titleName) {
   }
 }
 
-function getContents () {
-  const contents = CART.map(item => {
-    const data = {
-      id: item.item_id,
-      quantity: item.quantity
+function getInfoUser (keyName) {
+  const DB_NAME = '_ionicstorage'
+  const DB_STORE = '_ionickv'
+  const DB_VERSION = 2
+
+  const openRequest = window.indexedDB.open(DB_NAME, DB_VERSION)
+
+  openRequest.onsuccess = function () {
+    const DB = openRequest.result
+    const transaction = DB.transaction(DB_STORE)
+    const store = transaction.objectStore(DB_STORE)
+
+    if (keyName === 'user') {
+      const query = store.get('user')
+      query.onsuccess = function () {
+        const user = query.result
+        USER.email = user.email
+      }
+      query.onerror = function () {
+        console.log('Error: ', query.error)
+      }
     }
-    return data
-  })
-  return contents
+
+    if (keyName === 'actualAddress') {
+      const query = store.get('actualAddress')
+      query.onsuccess = function () {
+        const address = query.result
+
+        USER.cep = address.zip
+        USER.city = address.city
+        USER.state = address.state
+        USER.country = 'Brasil'
+        
+      }
+      query.onerror = function () {
+        console.log('Error: ', query.error)
+      }
+    }
+  }
+
+  openRequest.onerror = function () {
+    console.log('Error: ', openRequest.error)
+  }
 }
