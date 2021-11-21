@@ -1,6 +1,6 @@
 const VIEW = []
 const CART = []
-const USER = {}
+const USER = {};
 
 (function () {
   const data = window.performance.getEntries()
@@ -73,7 +73,7 @@ const USER = {}
             dataLayer.push({
               event: 'view_item',
               ecommerce: ecommerce,
-              user: USER || {}
+              user: USER
             })
 
             VIEW.push(ecommerce.items[0])
@@ -115,7 +115,7 @@ const USER = {}
             dataLayer.push({
               event: 'purchase',
               ecommerce: ecommerce,
-              user: USER || {}
+              user: USER
             })
           }
         }
@@ -178,7 +178,7 @@ const USER = {}
             dataLayer.push({
               event: 'add_to_cart',
               ecommerce: ecommerce,
-              user: USER || {}
+              user: USER
             })
 
             CART.push(ecommerce.items[0])
@@ -218,7 +218,7 @@ const USER = {}
             items: CART,
             value: total
           },
-          user: USER || {}
+          user: USER
         })
       }
     })
@@ -251,7 +251,7 @@ const USER = {}
               payment_type: type,
               value: total
             },
-            user: USER || {}
+            user: USER
           })
         }, 1000)
       }
@@ -285,7 +285,7 @@ const USER = {}
         dataLayer.push({
           event: 'add_shipping_info',
           ecommerce: ecommerce,
-          user: USER || {}
+          user: USER
         })
       }
     })
@@ -317,7 +317,7 @@ const USER = {}
             dataLayer.push({
               event: 'remove_from_cart',
               ecommerce: ecommerce,
-              user: USER || {}
+              user: USER
             })
 
             CART.splice(index, 1)
@@ -338,7 +338,7 @@ const USER = {}
 
     dataLayer.push({
       event: 'page_view',
-      user: USER || {}
+      user: USER
     })
   } catch (e) {
     console.error(e.message)
@@ -358,7 +358,7 @@ const USER = {}
         dataLayer.push({
           event: 'login',
           method: 'Password',
-          user: USER || {}
+          user: USER
         })
       }
     })
@@ -380,7 +380,7 @@ const USER = {}
         dataLayer.push({
           event: 'sign_up',
           method: 'Password',
-          user: USER || {}
+          user: USER
         })
       }
     })
@@ -431,7 +431,7 @@ function getInfoUser (keyName) {
         USER.cep = address.zip || ''
         USER.city = address.city || ''
         USER.state = address.state || ''
-        USER.country = 'Brasil' || ''
+        USER.country = 'Brasil'
         
       }
       query.onerror = function () {
