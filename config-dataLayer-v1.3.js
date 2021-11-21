@@ -67,7 +67,11 @@ const USER = {};
                 index: obj.order,
                 quantity: 1
               }],
-              value: obj.price.actualPrice
+              value: obj.price.actualPrice,
+              contents: [{
+                id: obj._id,
+                quantity: 1
+              }]
             }
 
             dataLayer.push({
@@ -99,6 +103,14 @@ const USER = {};
               return product
             })
 
+            const contents = obj.products.map(item => {
+              const content = {
+                id: item.id,
+                quantity: item.quantity
+              }
+              return content
+            })
+
             customTitle('Pedido')
 
             const ecommerce = {
@@ -109,7 +121,8 @@ const USER = {};
               transaction_id: obj._id,
               shipping: obj.deliveryTax,
               value: obj.total,
-              tax: 0
+              tax: 0,
+              contents: contents
             }
 
             dataLayer.push({
@@ -172,7 +185,11 @@ const USER = {};
                 currency: 'BRL',
                 quantity: itemCart.quantity
               }],
-              value: itemCart.total
+              value: itemCart.total,
+              contents: [{
+                id: itemCart.id,
+                quantity: itemCart.quantity
+              }]
             }
 
             dataLayer.push({
@@ -211,12 +228,15 @@ const USER = {};
 
         customTitle('Carrinho')
 
+        const contents = getContents()
+
         dataLayer.push({
           event: 'begin_checkout',
           ecommerce: {
             currency: 'BRL',
             items: CART,
-            value: total
+            value: total,
+            contents: contents
           },
           user: USER
         })
@@ -243,13 +263,16 @@ const USER = {};
 
           customTitle('Carrinho')
 
+          const contents = getContents()
+
           dataLayer.push({
             event: 'add_payment_info',
             ecommerce: {
               currency: 'BRL',
               items: CART,
               payment_type: type,
-              value: total
+              value: total,
+              contents: contents
             },
             user: USER
           })
@@ -272,14 +295,17 @@ const USER = {};
         }, 0)
 
         customTitle('Carrinho')
-        getInfoUser('user')
-        getInfoUser('actualAddress')
+        getInfoIndexedDB('user')
+        getInfoIndexedDB('actualAddress')
+
+        const contents = getContents()
 
         const ecommerce = {
           currency: 'BRL',
           items: CART,
           shipping_tier: 'Entrega/Retirada',
-          value: total
+          value: total,
+          contents: contents
         }
 
         dataLayer.push({
@@ -311,7 +337,11 @@ const USER = {};
             const ecommerce = {
               currency: 'BRL',
               items: [item],
-              value: item.price
+              value: item.price,
+              contents: [{
+                id: item.item_id,
+                quantity: item.quantity
+              }]
             }
 
             dataLayer.push({
@@ -333,8 +363,8 @@ const USER = {};
 (function () {
   try {
     customTitle('Menu')
-    getInfoUser('user')
-    getInfoUser('actualAddress')
+    getInfoIndexedDB('user')
+    getInfoIndexedDB('actualAddress')
 
     dataLayer.push({
       event: 'page_view',
@@ -352,8 +382,8 @@ const USER = {};
       const clickedElement = event.target
       if ((clickedElement.tagName === 'ION-BUTTON') && (clickedElement.innerText === 'Enviar')) {
         customTitle('Login')
-        getInfoUser('user')
-        getInfoUser('actualAddress')
+        getInfoIndexedDB('user')
+        getInfoIndexedDB('actualAddress')
 
         dataLayer.push({
           event: 'login',
@@ -374,8 +404,8 @@ const USER = {};
       const clickedElement = event.target
       if ((clickedElement.tagName === 'ION-BUTTON') && (clickedElement.textContent === ' Cadastrar')) {
         customTitle('SiginUp')
-        getInfoUser('user')
-        getInfoUser('actualAddress')
+        getInfoIndexedDB('user')
+        getInfoIndexedDB('actualAddress')
 
         dataLayer.push({
           event: 'sign_up',
@@ -399,7 +429,17 @@ function customTitle(titleName) {
   }
 }
 
-function getInfoUser (keyName) {
+function getContents () {
+  const contents = CART.map(item => {
+    const data = {
+      id: item.item_id,
+      quantity: item.quantity
+    }
+    return data
+  })
+}
+
+function getInfoIndexedDB (keyName) {
   const DB_NAME = '_ionicstorage'
   const DB_STORE = '_ionickv'
   const DB_VERSION = 2
