@@ -419,7 +419,7 @@ const USER = {};
   }
 })()
 
-function customTitle(titleName) {
+function customTitle  (titleName) {
   const title = document.title
   if (title.includes('|')) {
     const str = title.split('|')
@@ -429,7 +429,7 @@ function customTitle(titleName) {
   }
 }
 
-function getContents () {
+function getContents  () {
   const contents = CART.map(item => {
     const data = {
       id: item.item_id,
@@ -439,7 +439,7 @@ function getContents () {
   })
 }
 
-function getInfoIndexedDB (keyName) {
+function getInfoIndexedDB  (keyName) {
   const DB_NAME = '_ionicstorage'
   const DB_STORE = '_ionickv'
   const DB_VERSION = 2
@@ -472,7 +472,6 @@ function getInfoIndexedDB (keyName) {
         USER.city = address.city || ''
         USER.state = address.state || ''
         USER.country = 'Brasil'
-        
       }
       query.onerror = function () {
         console.log('Error: ', query.error)
