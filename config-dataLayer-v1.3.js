@@ -419,7 +419,7 @@ const USER = {};
   }
 })()
 
-function customTitle(titleName) {
+function customTitle (titleName) {
   const title = document.title
   if (title.includes('|')) {
     const str = title.split('|')
@@ -472,7 +472,6 @@ function getInfoIndexedDB (keyName) {
         USER.city = address.city || ''
         USER.state = address.state || ''
         USER.country = 'Brasil'
-        
       }
       query.onerror = function () {
         console.log('Error: ', query.error)
