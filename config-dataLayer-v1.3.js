@@ -437,6 +437,7 @@ function getContents () {
     }
     return data
   })
+  return contents
 }
 
 function getInfoIndexedDB (keyName) {
