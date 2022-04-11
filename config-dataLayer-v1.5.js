@@ -155,7 +155,7 @@ const USER = {};
         openRequest.onerror = function () {
           setEventException('purchase', openRequest.error)
         }
-      }, 5000)
+      }, 10000) //Aterado de 5000 para 10000
     }
   })
 })();
